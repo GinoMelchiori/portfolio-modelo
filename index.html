@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portfolio · Modelo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav>
+ <div class="links"><a href="#inicio">Inicio</a><a href="#sobre-mi">Sobre mí</a><a href="#portfolio">Portfolio</a><a href="#polaroids">Polaroids</a><a href="#contacto">Contacto</a></div>
+ <div style="display:flex;gap:8px"><button class="btn" id="editBtn" hidden>Editar</button><button class="btn" id="expBtn" hidden>Exportar</button><label class="btn" id="impLbl" hidden>Importar<input type="file" accept=".json" id="impIn" hidden></label></div>
+</nav>
+
+<header class="hero" id="inicio">
+ <h1 data-f="name" data-ph="Tu nombre"></h1>
+ <p data-f="tagline" data-ph="Modelo · Paraná, Argentina"></p>
+ <a class="btn" href="#portfolio">Ver portfolio</a>
+</header>
+
+<section id="sobre-mi">
+ <h2>Sobre mí</h2>
+ <p class="sub">Mi historia, quién soy y mis medidas.</p>
+ <div class="about">
+  <div>
+   <div class="avatar" id="avatar"><span>Foto de perfil</span></div>
+   <div class="panel" style="margin:12px 0 0"><input type="file" accept="image/*" id="avatarIn"></div>
+  </div>
+  <div>
+   <div class="bio" data-f="bio" data-ph="Contá tu historia: cómo empezaste, qué te inspira, qué tipo de trabajos buscás…"></div>
+   <div class="stats" id="stats"></div>
+   <div class="panel" style="margin-top:16px"><button class="btn" id="addStat">+ Dato</button><span style="font-size:13px;color:var(--mut)">Tocá un dato para editarlo. Vaciá el nombre para quitarlo.</span></div>
+  </div>
+ </div>
+</section>
+
+<section id="portfolio">
+ <h2>Portfolio</h2>
+ <p class="sub">Colecciones, colaboraciones, sesiones de fotos y desfiles.</p>
+ <div class="tabs" id="tabs"></div>
+ <div class="panel" id="addWork">
+  <input type="file" accept="image/*" multiple id="wFile">
+  <select id="wCat"></select>
+  <input type="text" id="wTitle" placeholder="Título (opcional)">
+  <button class="btn on" id="wAdd">Agregar</button>
+ </div>
+ <div class="grid" id="grid"></div>
+</section>
+
+<section id="polaroids">
+ <h2>Polaroids</h2>
+ <p class="sub">Momentos sin retoque, tal cual son.</p>
+ <div class="panel" id="addPola">
+  <input type="file" accept="image/*" multiple id="pFile">
+  <input type="text" id="pCap" placeholder="Epígrafe (opcional)">
+  <button class="btn on" id="pAdd">Agregar polaroid</button>
+ </div>
+ <div class="polas" id="polas"></div>
+</section>
+
+<section id="contacto" class="contact">
+ <h2>Contacto</h2>
+ <p class="sub">Para castings, colaboraciones y reservas.</p>
+ <p><span data-f="email" data-ph="tu@email.com"></span></p>
+ <p><span data-f="ig" data-ph="@tuinstagram"></span></p>
+</section>
+<footer>© <span id="yr"></span> · Portfolio</footer>
+<div id="lb"><img alt=""></div>
+
+<script src="app.js"></script>
+</body>
+</html>
