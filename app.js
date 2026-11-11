@@ -2,12 +2,19 @@ const CATS=['Colecciones','Colaboraciones','Sesiones de fotos','Desfiles'];
 const KEY='portfolio-modelo-v1';
 const def={p:{name:'Tu nombre',tagline:'Modelo · Paraná, Argentina',bio:'',email:'',ig:'',avatar:''},
  stats:[{k:'Altura',v:''},{k:'Busto',v:''},{k:'Cintura',v:''},{k:'Cadera',v:''},{k:'Calzado',v:''},{k:'Ojos',v:''},{k:'Pelo',v:''}],works:[],polas:[]};
-let S=load(),filter='Todo',editing=false;if(!S.p.email)S.p.email='ginomelchiori3@gmail.com';
-function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign({},def,JSON.parse(r))}catch(e){}return JSON.parse(JSON.stringify(def))}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){alert('No hay más espacio guardado en el navegador. Borrá alguna foto o usá imágenes más livianas.')}}
+let S=JSON.parse(JSON.stringify(def)),filter='Todo',editing=false;
+const DBN='portfolio-modelo',ST='kv';
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open(DBN,1);r.onupgradeneeded=()=>r.result.createObjectStore(ST);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbGet(){const d=await idb();return new Promise((res,rej)=>{const q=d.transaction(ST).objectStore(ST).get('state');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function idbSet(v){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).put(v,'state');t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})}
+async function idbDel(){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).delete('state');t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
+let tmr;function flush(){clearTimeout(tmr);return idbSet(S).catch(()=>alert('No se pudo guardar en este navegador. Probá con menos fotos o en otro navegador.'))}
+function save(){clearTimeout(tmr);tmr=setTimeout(flush,250)}
+addEventListener('pagehide',()=>{if(tmr)flush()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&tmr)flush()});
 const $=s=>document.querySelector(s);
 const esc=t=>String(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function shrink(file,max){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const k=Math.min(1,max/Math.max(i.width,i.height));const c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.82))};i.src=r.result};r.readAsDataURL(file)})}
+function shrink(file,max){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const k=Math.min(1,max/Math.max(i.width,i.height));const c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.78))};i.src=r.result};r.readAsDataURL(file)})}
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
 function fields(){document.querySelectorAll('[data-f]').forEach(el=>{const f=el.dataset.f;el.textContent=S.p[f]||(editing?'':'');el.contentEditable=editing;
@@ -43,7 +50,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#lb').classList.r
 
 $('#wCat').innerHTML=CATS.map(c=>'<option>'+c+'</option>').join('');
 $('#wAdd').onclick=async()=>{const fs=[...$('#wFile').files];if(!fs.length)return alert('Elegí al menos una imagen.');
- for(const f of fs)S.works.unshift({id:uid(),src:await shrink(f,1400),title:$('#wTitle').value.trim(),cat:$('#wCat').value});
+ for(const f of fs)S.works.unshift({id:uid(),src:await shrink(f,1200),title:$('#wTitle').value.trim(),cat:$('#wCat').value});
  save();$('#wFile').value='';$('#wTitle').value='';filter='Todo';tabs();grid()};
 $('#pAdd').onclick=async()=>{const fs=[...$('#pFile').files];if(!fs.length)return alert('Elegí al menos una imagen.');
  for(const f of fs)S.polas.unshift({id:uid(),src:await shrink(f,800),cap:$('#pCap').value.trim()});
@@ -53,7 +60,12 @@ $('#addStat').onclick=()=>{S.stats.push({k:'Nuevo dato',v:''});save();stats()};
 $('#editBtn').onclick=()=>{editing=!editing;document.body.classList.toggle('editing',editing);const b=$('#editBtn');b.textContent=editing?'Listo':'Editar';b.classList.toggle('on',editing);fields();stats();polas()};
 
 $('#expBtn').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='portfolio.json';a.click()};
-$('#impIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{S=Object.assign({},def,JSON.parse(await f.text()));save();location.reload()}catch(x){alert('Archivo inválido')}};
-if(location.hash==='#editar')['editBtn','expBtn','impLbl'].forEach(i=>$('#'+i).hidden=false);
+$('#impIn').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{S=Object.assign({},def,JSON.parse(await f.text()));await idbSet(S);location.reload()}catch(x){alert('Archivo inválido')}};
+$('#rstBtn').onclick=async()=>{if(confirm('¿Descartar lo guardado en este navegador y volver a lo publicado?')){try{await idbDel();localStorage.removeItem(KEY)}catch(e){}location.reload()}};
+if(location.hash==='#editar')['editBtn','expBtn','impLbl','rstBtn'].forEach(i=>$('#'+i).hidden=false);
 $('#yr').textContent=new Date().getFullYear();
-(async()=>{try{if(!localStorage.getItem(KEY)){const r=await fetch('portfolio.json');if(r.ok){S=Object.assign({},def,await r.json());if(!S.p.email)S.p.email='ginomelchiori3@gmail.com'}}}catch(e){}fields();stats();avatar();tabs();grid();polas()})();
+(async()=>{let st=null;try{st=await idbGet()}catch(e){}
+if(!st){try{const r=localStorage.getItem(KEY);if(r)st=JSON.parse(r)}catch(e){}}
+if(!st){try{const r=await fetch('portfolio.json');if(r.ok)st=await r.json()}catch(e){}}
+if(st)S=Object.assign({},def,st);if(!S.p.email)S.p.email='ginomelchiori3@gmail.com';
+fields();stats();avatar();tabs();grid();polas()})();
