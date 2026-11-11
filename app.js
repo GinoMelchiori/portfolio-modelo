@@ -14,7 +14,7 @@ function fields(){document.querySelectorAll('[data-f]').forEach(el=>{const f=el.
  if(!S.p[f]&&editing)el.dataset.empty=1;el.oninput=el.onblur=()=>{if(f){S.p[f]=el.textContent.trim();save()}};
  if(!S.p[f]&&!editing&&f!=='name'&&f!=='tagline')el.textContent='';
  if(!S.p[f]&&editing)el.textContent='';el.setAttribute('placeholder',el.dataset.ph)});
- const e=$('[data-f=email]');if(S.p.email&&!editing)e.innerHTML='<a href="mailto:'+esc(S.p.email)+'?subject='+encodeURIComponent('Contacto desde tu portfolio')+'" target="_blank" rel="noopener">'+esc(S.p.email)+'</a>';
+ const e=$('[data-f=email]');if(S.p.email&&!editing)e.innerHTML='<a href="https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(S.p.email)+'&su='+encodeURIComponent('Contacto desde tu portfolio')+'" target="_blank" rel="noopener">'+esc(S.p.email)+'</a>';
  const ig=$('[data-f=ig]'),h=(S.p.ig||'@gino.melchiori').trim(),n=h.replace(/^@/,''),u=n==='gino.melchiori'?'https://www.instagram.com/gino.melchiori?rpxt=Y3MxdGFiNHdzdThk':'https://www.instagram.com/'+encodeURIComponent(n);
  if(editing)ig.textContent=h;else ig.innerHTML='<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+esc(h)+'</a>'}
 function stats(){const box=$('#stats');box.innerHTML='';S.stats.forEach((s,i)=>{if(!editing&&!s.v)return;const d=document.createElement('div');d.className='stat';
