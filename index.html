@@ -9,7 +9,7 @@
 </head>
 <body>
 <nav>
- <div class="links"><a href="#inicio">Inicio</a><a href="#sobre-mi">Sobre mí</a><a href="#portfolio">Portfolio</a><a href="#polaroids">Polaroids</a><a href="#contacto">Contacto</a></div>
+ <div class="links"><a href="#inicio">Inicio</a><a href="#sobre-mi">Sobre mí</a><a href="#polaroids">Polaroids</a><a href="#portfolio">Portfolio</a><a href="#contacto">Contacto</a></div>
  <div style="display:flex;gap:8px"><button class="btn" id="editBtn" hidden>Editar</button><button class="btn" id="expBtn" hidden>Exportar</button><label class="btn" id="impLbl" hidden>Importar<input type="file" accept=".json" id="impIn" hidden></label><button class="btn" id="rstBtn" hidden>Restablecer</button></div>
 </nav>
 
@@ -35,6 +35,17 @@
  </div>
 </section>
 
+<section id="polaroids">
+ <h2>Polaroids</h2>
+ <p class="sub">Momentos sin retoque, tal cual son.</p>
+ <div class="panel" id="addPola">
+  <input type="file" accept="image/*" multiple id="pFile">
+  <input type="text" id="pCap" placeholder="Epígrafe (opcional)">
+  <button class="btn on" id="pAdd">Agregar polaroid</button>
+ </div>
+ <div class="polas" id="polas"></div>
+</section>
+
 <section id="portfolio">
  <h2>Portfolio</h2>
  <p class="sub">Colecciones, colaboraciones, sesiones de fotos y desfiles.</p>
@@ -46,17 +57,6 @@
   <button class="btn on" id="wAdd">Agregar</button>
  </div>
  <div class="grid" id="grid"></div>
-</section>
-
-<section id="polaroids">
- <h2>Polaroids</h2>
- <p class="sub">Momentos sin retoque, tal cual son.</p>
- <div class="panel" id="addPola">
-  <input type="file" accept="image/*" multiple id="pFile">
-  <input type="text" id="pCap" placeholder="Epígrafe (opcional)">
-  <button class="btn on" id="pAdd">Agregar polaroid</button>
- </div>
- <div class="polas" id="polas"></div>
 </section>
 
 <section id="contacto" class="contact">
